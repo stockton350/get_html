@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>get_html</title>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:#020403;
+  color:#69ff9a;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.app{
+  max-width:420px;
+  margin:0 auto;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  padding:16px;
+}
+
+.header{
+  font-weight:800;
+  margin-bottom:12px;
+}
+
+.cursor{
+  display:inline-block;
+  width:8px;
+  height:1em;
+  background:#69ff9a;
+  margin-left:4px;
+  animation:blink 1s steps(1) infinite;
+}
+
+@keyframes blink{50%{opacity:0}}
+
+.label{
+  margin:10px 0 6px;
+  font-size:0.8rem;
+}
+
+.box{
+  width:100%;
+  border:1px solid rgba(105,255,154,.5);
+  background:rgba(0,0,0,.3);
+  color:#b5ffd0;
+  border-radius:6px;
+  padding:10px;
+  font-family:inherit;
+  outline:none;
+}
+
+textarea.box{
+  height:50vh;
+  resize:none;
+}
+
+input.box{
+  height:40px;
+}
+
+.button{
+  margin-top:14px;
+  padding:14px;
+  text-align:center;
+  border:1px solid #69ff9a;
+  color:#69ff9a;
+  font-weight:800;
+  letter-spacing:.08em;
+  border-radius:6px;
+  background:transparent;
+}
+
+.status{
+  margin-top:10px;
+  font-size:0.75rem;
+  color:#8dffb5;
+}
+
+.screen-lines::after{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  background:repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,.03) 0px,
+    rgba(255,255,255,.03) 1px,
+    transparent 1px,
+    transparent 5px
+  );
+}
+</style>
+</head>
+<body class="screen-lines">
+<div class="app">
+
+<div class="header">&gt; get_html<span class="cursor"></span></div>
+
+<div class="label">&gt; enter your text here</div>
+<textarea id="html" class="box"></textarea>
+
+<div class="label">&gt; enter filename</div>
+<input id="filename" class="box" />
+
+<button class="button" onclick="downloadHTML()">GET HTML</button>
+
+<div id="status" class="status"></div>
+
+</div>
+
+<script>
+function normalize(name){
+  name = name.trim() || 'file';
+  if(!name.toLowerCase().endsWith('.html')) name += '.html';
+  return name;
+}
+
+function downloadHTML(){
+  const html = document.getElementById('html').value;
+  const filename = normalize(document.getElementById('filename').value);
+  if(!html.trim()){
+    document.getElementById('status').textContent = '> no input provided';
+    return;
+  }
+  const blob = new Blob([html],{type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  document.getElementById('status').textContent = `> file written: ${filename}`;
+}
+</script>
+
+</body>
+</html>
